@@ -1,6 +1,8 @@
 "use client";
 import { authClient } from "@/lib/auth-client";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 import { useState } from "react";
+import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -24,8 +26,8 @@ export default function SignUp() {
       return;
     }
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long");
+    if (password.length < PASSWORD_MIN_LENGTH) {
+      setError(`Password must be at least ${PASSWORD_MIN_LENGTH} characters long`);
       return;
     }
 
@@ -35,13 +37,13 @@ export default function SignUp() {
       email,
       password,
       name,
-      callbackURL: "/dashboard"
+      callbackURL: "/"
     }, {
       onRequest: () => {
         setIsLoading(true);
       },
       onSuccess: () => {
-        router.push("/dashboard");
+        router.push("/");
         router.refresh();
       },
       onError: (ctx) => {
@@ -189,12 +191,12 @@ export default function SignUp() {
           {/* Login */}
           <p className="mt-6 text-center text-sm text-slate-400">
             Already have an account?{" "}
-            <a
+            <Link
               href="/sign-in"
               className="font-medium text-blue-400 hover:text-blue-300 transition"
-              >
+            >
               Sign in
-            </a>
+            </Link>
           </p>
         </div>
 

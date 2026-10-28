@@ -5,14 +5,15 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ShoppingCart,
-  User,
   LogOut,
   LayoutDashboard,
   Menu,
   X,
   Search,
+  User,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { CATEGORIES } from "@/lib/constants";
 
 interface NavbarProps {
   cartItemCount?: number;
@@ -28,11 +29,13 @@ export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-  // Close menus on path change
-  useEffect(() => {
+  // Close menus on path change during render
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setIsMobileMenuOpen(false);
     setIsUserMenuOpen(false);
-  }, [pathname]);
+  }
 
   // Click outside to close user dropdown
   useEffect(() => {
@@ -69,13 +72,14 @@ export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
 
   const navLinks = [
     { label: "All Products", href: "/products" },
-    { label: "Electronics", href: "/products?category=Electronics" },
-    { label: "Apparel", href: "/products?category=Apparel" },
-    { label: "Home", href: "/products?category=Home" },
+    ...CATEGORIES.map((category) => ({
+      label: category,
+      href: `/products?category=${encodeURIComponent(category)}`,
+    })),
   ];
 
   // Minimal navbar presentation on dedicated authentication pages
-  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isAuthPage = pathname === "/sign-in" || pathname === "/sign-up";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/85 backdrop-blur-md">
@@ -145,7 +149,7 @@ export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
           {/* Authentication State */}
           {isPending ? (
             <div className="h-8 w-20 animate-pulse rounded-lg bg-slate-800/80" />
-          ) : session?.user ? (
+          ) : session?.user? (
             /* Logged In User Dropdown Menu */
             <div className="relative" ref={userMenuRef}>
               <button
@@ -176,6 +180,15 @@ export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
                   </div>
 
                   <Link
+                    href="/profile"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                  >
+                    <User className="h-4 w-4 text-slate-400" />
+                    Profile
+                  </Link>
+
+                  <Link
                     href="/dashboard"
                     onClick={() => setIsUserMenuOpen(false)}
                     className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
@@ -199,7 +212,7 @@ export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
             /* Guest Auth Buttons */
             <div className="flex items-center gap-2">
               <Link
-                href="/login"
+                href="/sign-in"
                 className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
               >
                 Sign in

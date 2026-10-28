@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "npx tsx prisma/seed.ts"
+    "seed": "npx tsx prisma/seed.ts",
+    "make-admin": "npx tsx scripts/make-admin.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -22,7 +23,8 @@
     "next": "16.3.8",
     "pg": "^8.23.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

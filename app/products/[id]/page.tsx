@@ -10,6 +10,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import AddToCartButton from "@/components/products/AddToCartButton";
+import { formatDZD } from "@/lib/format";
 import ProductCard from "@/components/products/ProductCard";
 
 interface ProductDetailPageProps {
@@ -129,7 +130,7 @@ export default async function ProductDetailPage({
             {/* Price & Stock Row */}
             <div className="flex items-center gap-4 pt-2">
               <span className="text-3xl font-extrabold text-white tracking-tight">
-                ${product.price.toFixed(2)}
+                {formatDZD(product.price)}
               </span>
 
               <div className="flex items-center gap-1.5 text-xs font-medium">

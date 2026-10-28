@@ -75,12 +75,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/login" className="hover:text-white transition-colors">
+                <Link href="/sign-in" className="hover:text-white transition-colors">
                   Sign In
                 </Link>
               </li>
               <li>
-                <Link href="/signup" className="hover:text-white transition-colors">
+                <Link href="/sign-up" className="hover:text-white transition-colors">
                   Create Account
                 </Link>
               </li>

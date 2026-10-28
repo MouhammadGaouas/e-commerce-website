@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ShoppingCart, Check, Minus, Plus } from "lucide-react";
 
 interface AddToCartButtonProps {
@@ -8,19 +9,35 @@ interface AddToCartButtonProps {
   stock: number;
 }
 
-export default function AddToCartButton({ stock }: AddToCartButtonProps) {
+export default function AddToCartButton({
+  productId,
+  stock,
+}: AddToCartButtonProps) {
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const isOutOfStock = stock <= 0;
+  const router = useRouter();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (isOutOfStock) return;
 
-    // Trigger visual added animation
     setIsAdded(true);
-    setTimeout(() => {
-      setIsAdded(false);
-    }, 2000);
+    try {
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, quantity }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to add item to cart");
+      }
+      router.refresh();
+    } catch {
+    } finally {
+      setTimeout(() => {
+        setIsAdded(false);
+      }, 2000);
+    }
   };
 
   const increment = () => {
@@ -32,7 +49,7 @@ export default function AddToCartButton({ stock }: AddToCartButtonProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-product-id={productId}>
       {/* Quantity Selector (when in stock) */}
       {!isOutOfStock && (
         <div className="flex items-center gap-4">
@@ -65,7 +82,7 @@ export default function AddToCartButton({ stock }: AddToCartButtonProps) {
         </div>
       )}
 
-      {/* Primary Action Button */}
+
       <button
         type="button"
         onClick={handleAddToCart}
@@ -78,6 +95,7 @@ export default function AddToCartButton({ stock }: AddToCartButtonProps) {
             : "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/25 active:scale-[0.99]"
         }`}
       >
+
         {isOutOfStock ? (
           "Currently Unavailable"
         ) : isAdded ? (

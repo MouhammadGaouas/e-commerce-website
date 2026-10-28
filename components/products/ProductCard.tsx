@@ -1,20 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingBag } from "lucide-react";
-
-export interface ProductType {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string | null;
-  stock: number;
-  category: string;
-}
+import type { Product } from "@/lib/types";
+import { formatDZD } from "@/lib/format";
 
 interface ProductCardProps {
-  product: ProductType;
-}
+  product: Product;
+} 
 
 export default function ProductCard({ product }: ProductCardProps) {
   const isOutOfStock = product.stock <= 0;
@@ -73,7 +65,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="mt-4 pt-3 border-t border-slate-800/70 flex items-center justify-between">
           <div>
             <span className="text-lg font-bold text-white tracking-tight">
-              ${product.price.toFixed(2)}
+              {formatDZD(product.price)}
             </span>
           </div>
 

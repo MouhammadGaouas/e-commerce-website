@@ -20,7 +20,7 @@ export default function SignInCard() {
       {
         email,
         password,
-        callbackURL: "/dashboard",
+        callbackURL: "/",
       },
       {
         onRequest: () => {
@@ -29,7 +29,7 @@ export default function SignInCard() {
         },
         onSuccess: () => {
           setIsLoading(false);
-          router.push("/dashboard");
+          router.push("/");
         },
         onError: (ctx) => {
           setIsLoading(false);
@@ -122,7 +122,7 @@ export default function SignInCard() {
       <div className="mt-6 text-center text-sm text-slate-400">
         Don&apos;t have an account?{" "}
         <Link
-          href="/signup"
+          href="/sign-up"
           className="font-medium text-blue-400 hover:text-blue-300 hover:underline transition-colors"
         >
           Sign up

@@ -175,7 +175,7 @@ export default async function HomePage() {
               <div>
                 <h4 className="font-semibold text-white text-base">Free Global Shipping</h4>
                 <p className="mt-1 text-xs text-slate-400 leading-relaxed">
-                  Fast, tracked express delivery on all orders over $50 with real-time tracking updates.
+                  Fast, tracked express delivery on all orders over 50 DZD with real-time tracking updates.
                 </p>
               </div>
             </div>

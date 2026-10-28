@@ -21,6 +21,13 @@ model User {
   email         String
   emailVerified Boolean   @default(false)
   image         String?
+  phone         String?
+  wilaya        String?
+  city          String?
+  role          String    @default("user")
+  banned        Boolean   @default(false)
+  banReason     String?
+  banExpires    DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
@@ -34,15 +41,16 @@ model User {
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@index([userId])
@@ -85,7 +93,7 @@ model Product {
   id          String   @id @default(cuid())
   name        String
   description String
-  price       Float
+  price       Decimal
   image       String?
   stock       Int
   category    String
@@ -117,7 +125,7 @@ model CartItem {
 
 model Order {
   id        String      @id @default(cuid())
-  total     Float
+  total     Decimal
   status    OrderStatus @default(PENDING)
   createdAt DateTime    @default(now())
   userId    String
@@ -129,7 +137,7 @@ model Order {
 model OrderItem {
   id        String @id @default(cuid())
   quantity  Int
-  price     Float
+  price     Decimal
   orderId   String
   productId String
 

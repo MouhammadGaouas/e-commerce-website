@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 import ProductCard from "@/components/products/ProductCard";
 import ProductFilters from "@/components/products/ProductFilters";
 import { PackageX } from "lucide-react";
@@ -21,7 +22,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const { category, sort, q } = await searchParams;
 
   // Build Prisma where query filters
-  const where: any = {};
+  const where: Prisma.ProductWhereInput = {};
 
   if (category && category !== "all") {
     where.category = {
@@ -38,7 +39,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   }
 
   // Build Prisma orderBy sort criteria
-  let orderBy: any = { createdAt: "desc" };
+  let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: "desc" };
   if (sort === "price_asc") {
     orderBy = { price: "asc" };
   } else if (sort === "price_desc") {

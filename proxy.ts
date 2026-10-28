@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
 // Routes that require authentication
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/dashboard", "/profile"];
 
 // Authentication routes that logged-in users should not access
 const authRoutes = ["/sign-in", "/sign-up"];
@@ -12,7 +12,9 @@ const authRoutes = ["/sign-in", "/sign-up"];
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  console.log(pathname)
   const sessionCookie = getSessionCookie(request);
+  
   const isAuthenticated = Boolean(sessionCookie);
 
   const isProtectedRoute = protectedRoutes.some(
@@ -25,7 +27,7 @@ export async function proxy(request: NextRequest) {
 
   // 1. Authenticated users should not access auth pages (/login, /signup)
   if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   // 2. Unauthenticated users must be redirected to /login when visiting protected routes
@@ -49,6 +51,8 @@ export const config = {
   matcher: [
     "/dashboard",
     "/dashboard/:path*",
+    "/profile",
+    "/profile/:path*",
     "/sign-in",
     "/sign-up",
   ],
