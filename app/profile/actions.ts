@@ -7,6 +7,7 @@ import {
   type ProfileFieldErrors,
 } from "@/lib/validation/profile";
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export interface ProfileState {
   status: "success" | "error" | null;
@@ -49,6 +50,8 @@ export async function updateProfile(
       },
       headers: await headers(),
     });
+    revalidatePath("/profile");
+    revalidatePath("/dashboard");
   } catch {
     return {
       status: "error",

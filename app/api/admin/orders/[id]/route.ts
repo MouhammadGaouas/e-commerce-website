@@ -1,20 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { jsonError, logError } from "@/lib/errors";
-import { getSession } from "@/lib/session";
-
-async function isAdmin(): Promise<boolean> {
-  const session = await getSession();
-  const userId = session?.user?.id;
-  if (!userId) return false;
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  return user?.role === "admin";
-}
+import { requireAdminApi } from "@/lib/session";
+import { updateOrderStatus } from "@/lib/services/orders";
 
 export async function PATCH(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    if (!(await isAdmin())) {
-      return jsonError("Forbidden", 403);
+    const auth = await requireAdminApi();
+    if (!auth.user) {
+      return auth.response;
     }
 
     const { id } = await params;
@@ -25,18 +18,16 @@ export async function PATCH(_request: NextRequest, { params }: { params: Promise
       return jsonError("Invalid status", 400);
     }
 
-    const order = await prisma.order.findUnique({ where: { id } });
-    if (!order) {
-      return jsonError("Order not found", 404);
+    const result = await updateOrderStatus(id, status);
+
+    if (!result.ok) {
+      if (result.error === "ORDER_NOT_FOUND") {
+        return jsonError("Order not found", 404);
+      }
+      return jsonError("Invalid status", 400);
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: order.id },
-      data: { status },
-      include: { items: { include: { product: true } } },
-    });
-
-    return NextResponse.json({ order: updatedOrder });
+    return NextResponse.json({ order: result.order });
   } catch (error) {
     logError("admin:orders:patch", error);
     return jsonError("Internal server error", 500);

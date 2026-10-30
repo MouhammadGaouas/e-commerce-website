@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { jsonError, logError } from "@/lib/errors";
-import { getSession } from "@/lib/session";
+import { requireAdminApi } from "@/lib/session";
 import { productCreateSchema } from "@/lib/validation/product";
+import { createProduct } from "@/lib/services/products";
 import type { Prisma } from "@/generated/prisma/client";
 
 export async function GET(request: NextRequest) {
@@ -61,15 +62,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
-    const userId = session?.user?.id;
-    if (!userId) {
-      return jsonError("Unauthorized", 401);
-    }
-
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (user?.role !== "admin") {
-      return jsonError("Forbidden", 403);
+    const auth = await requireAdminApi();
+    if (!auth.user) {
+      return auth.response;
     }
 
     const body = await request.json();
@@ -78,15 +73,13 @@ export async function POST(request: NextRequest) {
       return jsonError("Validation failed", 400);
     }
 
-    const product = await prisma.product.create({
-      data: {
-        name: parsed.data.name,
-        description: parsed.data.description,
-        price: parsed.data.price,
-        image: parsed.data.image,
-        stock: parsed.data.stock,
-        category: parsed.data.category,
-      },
+    const product = await createProduct({
+      name: parsed.data.name,
+      description: parsed.data.description,
+      price: parsed.data.price,
+      image: parsed.data.image,
+      stock: parsed.data.stock,
+      category: parsed.data.category,
     });
 
     return NextResponse.json({ product }, { status: 201 });
