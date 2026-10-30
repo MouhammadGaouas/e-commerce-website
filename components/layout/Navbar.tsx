@@ -24,6 +24,8 @@ export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
   const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
 
+  const isAdmin = (session?.user as { role?: string } | undefined)?.role === "admin";
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,6 +73,7 @@ export default function Navbar({ cartItemCount = 0 }: NavbarProps) {
   };
 
   const navLinks = [
+    ...(isAdmin ? [{ label: "Admin", href: "/admin/dashboard" }] : []),
     { label: "All Products", href: "/products" },
     ...CATEGORIES.map((category) => ({
       label: category,
